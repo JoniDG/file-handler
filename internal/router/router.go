@@ -31,7 +31,7 @@ func mapRoutes(r *gin.Engine) {
 	ctrl := controller.NewFilesController(svc)
 
 	// Endpoints
-	r.POST(defines.PostFile, ctrl.PostFile)
+	r.POST(defines.EndpointPostFile, ctrl.PostFile)
 
 	// Health check endpoint
 	r.GET(defines.EndpointPing, healthCheck)

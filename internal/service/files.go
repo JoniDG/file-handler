@@ -9,7 +9,7 @@ import (
 )
 
 type FilesService interface {
-	PostFile(*multipart.FileHeader, *gin.Context, string) (*string, error)
+	PostFile(*multipart.FileHeader, *gin.Context, string) error
 }
 
 type filesService struct {
@@ -22,12 +22,12 @@ func NewFilesService(repo repository.FilesRepository) FilesService {
 	}
 }
 
-func (r *filesService) PostFile(file *multipart.FileHeader, ctx *gin.Context, clientId string) (*string, error) {
+func (r *filesService) PostFile(file *multipart.FileHeader, ctx *gin.Context, clientId string) error {
 	id := uuid.New()
 	nameFile := fmt.Sprintf("%s-%s", clientId, id)
-	ok, err := r.repo.PostFile(nameFile, file, ctx)
+	err := r.repo.PostFile(nameFile, file, ctx)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return ok, nil
+	return nil
 }

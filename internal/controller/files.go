@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"file-handler/internal/defines"
 	"file-handler/internal/service"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -22,25 +23,24 @@ func NewFilesController(svc service.FilesService) FilesController {
 }
 
 func (c *filesController) PostFile(ctx *gin.Context) {
-	file, err := ctx.FormFile("file")
-	clientId, exist := ctx.GetPostForm("client-id")
-	if exist == false {
-		ctx.JSON(http.StatusBadRequest, gin.H{"message": "missing id"})
-		return
-	}
+	file, err := ctx.FormFile(defines.FileName)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": "invalid file"})
 		return
 	}
-	if filepath.Ext(file.Filename) != ".csv" {
+	if filepath.Ext(file.Filename) != defines.FileExt {
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": "invalid type file"})
 		return
 	}
-
-	name, err := c.svc.PostFile(file, ctx, clientId)
+	clientId := ctx.GetHeader("client-id")
+	if clientId == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "missing client-id"})
+		return
+	}
+	err = c.svc.PostFile(file, ctx, clientId)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
-	ctx.JSON(http.StatusCreated, name)
+	ctx.Status(201)
 }
