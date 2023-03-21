@@ -42,5 +42,5 @@ func (c *filesController) PostFile(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
-	ctx.Status(201)
+	ctx.JSON(http.StatusCreated, nil)
 }
