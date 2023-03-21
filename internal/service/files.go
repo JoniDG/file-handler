@@ -4,12 +4,12 @@ import (
 	"file-handler/internal/repository"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"mime/multipart"
-	"time"
 )
 
 type FilesService interface {
-	PostFile(*multipart.FileHeader, *gin.Context) (*string, error)
+	PostFile(*multipart.FileHeader, *gin.Context, string) (*string, error)
 }
 
 type filesService struct {
@@ -22,11 +22,9 @@ func NewFilesService(repo repository.FilesRepository) FilesService {
 	}
 }
 
-func (r *filesService) PostFile(file *multipart.FileHeader, ctx *gin.Context) (*string, error) {
-	now := time.Now()
-	str := now.Format("02-01-2006 15:04:05")
-	mili := now.Nanosecond() / 1000000
-	nameFile := fmt.Sprintf(str+":%03d", mili)
+func (r *filesService) PostFile(file *multipart.FileHeader, ctx *gin.Context, clientId string) (*string, error) {
+	id := uuid.New()
+	nameFile := fmt.Sprintf("%s-%s", clientId, id)
 	ok, err := r.repo.PostFile(nameFile, file, ctx)
 	if err != nil {
 		return nil, err

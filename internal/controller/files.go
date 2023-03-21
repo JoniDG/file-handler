@@ -23,6 +23,11 @@ func NewFilesController(svc service.FilesService) FilesController {
 
 func (c *filesController) PostFile(ctx *gin.Context) {
 	file, err := ctx.FormFile("file")
+	clientId, exist := ctx.GetPostForm("client-id")
+	if exist == false {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "missing id"})
+		return
+	}
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": "invalid file"})
 		return
@@ -32,7 +37,7 @@ func (c *filesController) PostFile(ctx *gin.Context) {
 		return
 	}
 
-	name, err := c.svc.PostFile(file, ctx)
+	name, err := c.svc.PostFile(file, ctx, clientId)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
