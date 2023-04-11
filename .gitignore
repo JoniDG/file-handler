@@ -16,3 +16,4 @@
 .idea/
 .env
 .files-test/
+.DS_Store
